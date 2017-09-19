@@ -1,0 +1,15 @@
+{
+  "name": "sdc-visual-regression-testing",
+  "version": "1.0.0",
+  "description": "",
+  "main": "false",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test1":""
+  },
+  "author": "tfoster",
+  "license": "ISC",
+  "devDependencies": {
+    "phantomcss": "^1.1.5"
+  }
+}
