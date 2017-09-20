@@ -2,29 +2,82 @@
 	Require and initialise PhantomCSS module
 	Paths are relative to CasperJs directory
 */
-
+console.clear();
 var phantomcss = require('phantomcss');
-var url = 'http://qa.schwans.com';
+var fs = require('fs');
+
+var url22 = 'http://qa.schwans.com';
+
 
 var viewport_arr = [{
   'name': 'desktop',
   'vp': {
-    width: 1200,
-    height: 400
+    'width': 1200,
+    'height': 400
   }
 }, {
   'name': 'tablet',
   'vp': {
-    width: 800,
-    height: 400
+    'width': 800,
+    'height': 400
   }
 }, {
   'name': 'mobile',
   'vp': {
-    width: 400,
-    height: 400
+    'width': 400,
+    'height': 400
   }
 }];
+
+var qa_hp = false;
+
+var url_arr = [{
+  'name': 'specials-cat',
+  'url': {
+    'qa': 'http://www.schwans.com/products/specials',
+    'local': 'http://localhost:3000/productblock/specialcat'
+  },
+  'selector': '#main'
+}, {
+  'name': 'pizza-pdp',
+  'url': {
+    'qa': 'http://www.schwans.com/products/product?id=56720&c1=11452',
+    'local': 'http://localhost:3000/productblock/pizzapdp'
+  },
+  'selector': '#main'
+}, {
+  'name': 'pizza-cat',
+  'url': {
+    'qa': 'http://www.schwans.com/products/category?c1=11452',
+    'local': 'http://localhost:3000/productblock/pizzacat'
+  },
+  'selector': '#main'
+}];
+
+// fs.readFile('C:/inetpub/wwwroot/scss_master/scss_main/_LOCAL_COMPILED/custon.css', function(err, data) {
+//   if (err) throw err;
+//   console.log(data);
+// });
+
+
+// var cssData;
+// var fs = require('fs'),
+
+
+/***********************************************************************************************
+ * css injection here  -tring it
+ ********************************************************************************************************/
+// var filename = "C:/inetpub/wwwroot/scss_master/scss_main/_LOCAL_COMPILED/custom.css"; //process.argv[2];
+// var _css_content = fs.read(filename); //, 'utf8', function (err, data) {
+
+
+//   if (err) throw err;
+//   console.log('OK: ' + filename);
+//   console.log(data)
+//   cssData = data;
+// });
+//console.log(_css_content); -- is good.
+
 
 phantomcss.init({
   screenshotRoot: './screenshots/placeholders',
@@ -33,70 +86,169 @@ phantomcss.init({
     errorColor: {
       red: 255,
       green: 0,
-      blue: 0
+      blue: 255
     },
     errorType: 'movement',
-    transparency: 0.9
+    transparency: 0.7
   }
 });
 
-casper.start(url);
+casper.start(url22);
+
+// if (qa_hp == true) {
+//   casper.page.evaluate(function () {
+//     document.body.bgColor = 'white';
+//   });
+//   casper.then(function () {
+//     casper.click('.modal-content-close.js-modal-close');
+//   });
+
+//   casper.then(function () {
+//     phantomcss.screenshot('body', 'body_desktop');
+//   });
+// }
 
 
-casper.page.evaluate(function () {
-  document.body.bgColor = 'white';
-});
+/***********************************************************************************************
+ * css injection here  -tring it
+ ********************************************************************************************************/
 
 
-casper.then(function () {
-  casper.click('.modal-content-close.js-modal-close');
-});
 
-casper.then(function () {
-  phantomcss.screenshot('body', 'body_desktop');
-});
-
-casper.each(viewport_arr, function (casper, viewport) {
-  this.then(function () {
-    this.viewport(viewport.vp.width, viewport.vp.height);
-    this.then(function () {
-      phantomcss.screenshot('body', 'body' + "_" + viewport.name);
-    });
+/*casper.then(function (_css_content) {
+  var titleText = this.evaluate(function (_css_content) {
+    return document.querySelector('h1').appendChild('<style>' + _css_content + '</style>')
   });
+  // this.echo('Title is: ' + titleText);
+  // this.evaluate(function () {
+  //   document.querySelector('h1').innerHTML = 'New title</h1><h1>ASDFASDFASF';
+  // });
+  // this.echo('Title is now: ' + this.evaluate(function () {
+  //   return document.querySelector('h1').innerHTML;
+  // }));
 });
+*/
 
-for (i = 999; i < viewport_arr.length; i++) {
 
-  var v_arr = viewport_arr[i];
-  // casper.viewport({
-  //   width: viewport_arr[i].width,
-  //   height: 600
-  // }); // the 600 is arbitrary to have any value
-  //casper.then(function (i) {
-  //console.log('height: ' + v_arr.vp.height + ', width: ' + v_arr.vp.width + ', name: ' + v_arr.name);
-  console.log('height: ' + v_arr.vp.height + ', width: ' + v_arr.vp.width + ', name: ' + v_arr.name);
-  casper.viewport(v_arr.vp.width, v_arr.vp.height, function () {
-    //phantomcss.screenshot('body', 'body_desktop_' + viewport_arr[i].name);
-    console.log(i + ',' + i + ',' + i + ',' + i);
-    // });
 
-    casper.then(function () {
-      this.wait(10000, function () {
-        phantomcss.screenshot('body', 'body' + "_" + v_arr.name);
-        console.log('height: ' + v_arr.vp.height + ', width: ' + v_arr.vp.width + ', name: ' + v_arr.name);
+// casper.thenOpen
+// casper.each(viewport_arr, function (casper, viewport) {
+//   this.then(function () {
+//     this.viewport(viewport.vp.width, viewport.vp.height);
+//     this.then(function () {
+//       phantomcss.screenshot('body', 'body' + "_" + viewport.name);
+//     });
+//   });
+// });
+
+// step through each URL, and in each URL step through each Viewport
+var capture_markup = false;
+casper.each(url_arr, function (casper, url) {
+  this.thenOpen(url.url.qa, function () {
+    console.log(url.url.qa);
+
+    this.each(viewport_arr, function (casper, viewport) {
+      this.then(function () {
+        this.waitForSelector('#main');
+
+        if (capture_markup == true) {
+          var _path = 'c:\\inetpub\\wwwroot\\sdc_template\\code_factory\\' + url.name + '-' + url.selector + '.njk',
+            _content = this.getHTML('#main');
+
+          if (fs.isFile(_path)) {
+            fs.write(_path, _content);
+          } else {
+            fs.touch(_path);
+            fs.write(_path, _content);
+          }
+        }
+
+        this.viewport(viewport.vp.width, viewport.vp.height);
+        this.then(function () {
+          phantomcss.screenshot(url.selector, url.name + "_" + viewport.name);
+        });
       });
     });
   });
+});
 
 
-  // casper.then(function () { 
-  //   casper.viewport(viewport_arr[i].vp);
-  // });
 
-  // casper.then(function () {
-  //   phantomcss.screenshot('body', 'body_desktop_' + viewport[i].name);
-  // });
-}
+
+
+
+
+
+
+// window.onload = function() { appendStyle(styles) };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// for (i = 999; i < viewport_arr.length; i++) {
+
+//   var v_arr = viewport_arr[i];
+//   // casper.viewport({
+//   //   width: viewport_arr[i].width,
+//   //   height: 600
+//   // }); // the 600 is arbitrary to have any value
+//   //casper.then(function (i) {
+//   //console.log('height: ' + v_arr.vp.height + ', width: ' + v_arr.vp.width + ', name: ' + v_arr.name);
+//   console.log('height: ' + v_arr.vp.height + ', width: ' + v_arr.vp.width + ', name: ' + v_arr.name);
+//   casper.viewport(v_arr.vp.width, v_arr.vp.height, function () {
+//     //phantomcss.screenshot('body', 'body_desktop_' + viewport_arr[i].name);
+//     console.log(i + ',' + i + ',' + i + ',' + i);
+//     // });
+
+//     casper.then(function () {
+//       this.wait(10000, function () {
+//         phantomcss.screenshot('body', 'body' + "_" + v_arr.name);
+//         console.log('height: ' + v_arr.vp.height + ', width: ' + v_arr.vp.width + ', name: ' + v_arr.name);
+//       });
+//     });
+//   });
+
+
+// casper.then(function () { 
+//   casper.viewport(viewport_arr[i].vp);
+// });
+
+// casper.then(function () {
+//   phantomcss.screenshot('body', 'body_desktop_' + viewport[i].name);
+// });
+//}
 
 /*
 var scLoop = function (viewports, regions) {
