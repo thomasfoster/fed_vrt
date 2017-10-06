@@ -5,11 +5,14 @@
   "main": "false",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "test1":""
+    "test1": ""
   },
   "author": "tfoster",
   "license": "ISC",
   "devDependencies": {
     "phantomcss": "^1.1.5"
+  },
+  "dependencies": {
+    "process": "^0.11.10"
   }
 }

@@ -6,8 +6,8 @@ console.clear();
 var phantomcss = require('phantomcss');
 var fs = require('fs');
 
-var url22 = 'http://qa.schwans.com';
-
+var url_qa = 'http://qa.schwans.com';
+var url_local = "http://localhost:3000/productblock/specialcat.html"
 
 var viewport_arr = [{
   'name': 'desktop',
@@ -35,21 +35,28 @@ var url_arr = [{
   'name': 'specials-cat',
   'url': {
     'qa': 'http://www.schwans.com/products/specials',
-    'local': 'http://localhost:3000/productblock/specialcat'
+    'local': 'http://localhost:3000/productblock/specialcat.html'
   },
   'selector': '#main'
 }, {
   'name': 'pizza-pdp',
   'url': {
     'qa': 'http://www.schwans.com/products/product?id=56720&c1=11452',
-    'local': 'http://localhost:3000/productblock/pizzapdp'
+    'local': 'http://localhost:3000/productblock/pizzapdp.html'
   },
   'selector': '#main'
 }, {
   'name': 'pizza-cat',
   'url': {
     'qa': 'http://www.schwans.com/products/category?c1=11452',
-    'local': 'http://localhost:3000/productblock/pizzacat'
+    'local': 'http://localhost:3000/productblock/pizzacat.html'
+  },
+  'selector': '#main'
+}, {
+  'name': 'search',
+  'url': {
+    'qa': 'https://qa.schwans.com/secure/account/login',
+    'local': 'http://localhost:3000/productblock/search'
   },
   'selector': '#main'
 }];
@@ -67,9 +74,9 @@ var url_arr = [{
 /***********************************************************************************************
  * css injection here  -tring it
  ********************************************************************************************************/
-// var filename = "C:/inetpub/wwwroot/scss_master/scss_main/_LOCAL_COMPILED/custom.css"; //process.argv[2];
-// var _css_content = fs.read(filename); //, 'utf8', function (err, data) {
-
+// CSS var filename = "C:/inetpub/wwwroot/scss_master/scss_main/_LOCAL_COMPILED/tom.css"; //process.argv[2];
+// CSS var _css_content = fs.read(filename); //, 'utf8', function (err, data) {
+//console.log(_css_content);
 
 //   if (err) throw err;
 //   console.log('OK: ' + filename);
@@ -93,7 +100,7 @@ phantomcss.init({
   }
 });
 
-casper.start(url22);
+casper.start(url_local);
 
 // if (qa_hp == true) {
 //   casper.page.evaluate(function () {
@@ -144,27 +151,60 @@ casper.start(url22);
 // step through each URL, and in each URL step through each Viewport
 var capture_markup = false;
 casper.each(url_arr, function (casper, url) {
-  this.thenOpen(url.url.qa, function () {
-    console.log(url.url.qa);
+  this.thenOpen(url.url.local, function () {
+    console.log(url.url.local);
+
+    /*casper.then(function () {
+      //
+      //console.log(_css_content);
+      this.evaluate(function (_css) {
+        var newNode = document.createElement("style");
+        newNode.setAttribute("id", "cssLoaded");
+        newNode.innerHTML = _css;
+        console.log('shippyboy U: :( :( ): :) :) :) :) :) ')
+        console.log(newNode);
+        return document.querySelector('#main').appendChild(newNode); //'<style>' + _css_content + '</style><div id="cssLoaded"></div>');
+
+      }, {
+        _css: _css_content
+      });
+      // this.echo('Title is: ' + titleText);
+      // this.evaluate(function () {
+      //   document.querySelector('h1').innerHTML = 'New title</h1><h1>ASDFASDFASF';
+      // });
+      // this.echo('Title is now: ' + this.evaluate(function () {
+      //   return document.querySelector('h1').innerHTML;
+      // }));
+
+      this.waitForSelector('#cssLoaded');
+      this.then(function () {
+        console.log('css loaded !');
+
+      });
+    });
+*/
 
     this.each(viewport_arr, function (casper, viewport) {
-      this.then(function () {
+      this.wait(4000, function () {
+        this.waitForResource('custom.css');
         this.waitForSelector('#main');
+        //this.waitForSelector('#cssLoaded');
 
-        if (capture_markup == true) {
-          var _path = 'c:\\inetpub\\wwwroot\\sdc_template\\code_factory\\' + url.name + '-' + url.selector + '.njk',
-            _content = this.getHTML('#main');
+        // if (capture_markup == true) {
+        //   var _path = 'c:\\inetpub\\wwwroot\\sdc_template\\code_factory\\' + url.name + '-' + url.selector + '.njk',
+        //     _content = this.getHTML('#main');
 
-          if (fs.isFile(_path)) {
-            fs.write(_path, _content);
-          } else {
-            fs.touch(_path);
-            fs.write(_path, _content);
-          }
-        }
+        //   if (fs.isFile(_path)) {
+        //     fs.write(_path, _content);
+        //   } else {
+        //     fs.touch(_path);
+        //     fs.write(_path, _content);
+        //   }
+        // }
 
-        this.viewport(viewport.vp.width, viewport.vp.height);
+
         this.then(function () {
+          this.viewport(viewport.vp.width, viewport.vp.height);
           phantomcss.screenshot(url.selector, url.name + "_" + viewport.name);
         });
       });
@@ -190,6 +230,48 @@ casper.each(url_arr, function (casper, url) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// step through each URL, and in each URL step through each Viewport
+
+casper.each(url_arr, function (casper, url) {
+  this.thenOpen(url.url.local, function () {
+    console.log(url.url.local);
+
+    this.each(viewport_arr, function (casper, viewport) {
+      this.wait(4000, function () {
+        this.waitForResource('custom.css');
+        this.waitForSelector('#main');
+
+        this.then(function () {
+          this.viewport(viewport.vp.width, viewport.vp.height);
+          phantomcss.screenshot(url.selector, url.name + "_" + viewport.name);
+        });
+      });
+    });
+  });
+});
 
 
 
@@ -446,17 +528,17 @@ var scLoop = function (viewports, regions) {
 //end megamenuSelectors tests
 
 //Do comparison on all base and comparative screenshots
-casper.then(function now_check_the_screenshots() {
-  // compare screenshots
-  phantomcss.compareAll();
-});
+// casper.then(function now_check_the_screenshots() {
+//   // compare screenshots
+//   phantomcss.compareAll();
+// });
 
 /*
 Casper end tests signal
 */
-casper.then(function end_it() {
-  casper.test.done();
-});
+// casper.then(function end_it() {
+//   casper.test.done();
+// });
 
 /*
  Casper run tests
