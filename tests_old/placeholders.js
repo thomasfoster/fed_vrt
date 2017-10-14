@@ -6,7 +6,7 @@ console.clear();
 var phantomcss = require('phantomcss');
 var fs = require('fs');
 
-var url_qa = 'http://qa.schwans.com';
+var url_qa = 'http://www.schwans.com';
 var url_local = "http://localhost:3000/productblock/specialcat.html"
 
 var viewport_arr = [{
@@ -100,7 +100,7 @@ phantomcss.init({
   }
 });
 
-casper.start(url_local);
+casper.start(url_qa);
 
 // if (qa_hp == true) {
 //   casper.page.evaluate(function () {
@@ -151,8 +151,8 @@ casper.start(url_local);
 // step through each URL, and in each URL step through each Viewport
 var capture_markup = false;
 casper.each(url_arr, function (casper, url) {
-  this.thenOpen(url.url.local, function () {
-    console.log(url.url.local);
+  this.thenOpen(url.url.qa, function () {
+    console.log(url.url.qa);
 
     /*casper.then(function () {
       //
@@ -186,7 +186,7 @@ casper.each(url_arr, function (casper, url) {
 
     this.each(viewport_arr, function (casper, viewport) {
       this.wait(4000, function () {
-        this.waitForResource('custom.css');
+        //this.waitForResource('custom.css');
         this.waitForSelector('#main');
         //this.waitForSelector('#cssLoaded');
 
@@ -261,7 +261,7 @@ casper.each(url_arr, function (casper, url) {
 
     this.each(viewport_arr, function (casper, viewport) {
       this.wait(4000, function () {
-        this.waitForResource('custom.css');
+        //this.waitForResource('custom.css');
         this.waitForSelector('#main');
 
         this.then(function () {
